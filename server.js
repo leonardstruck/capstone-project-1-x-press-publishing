@@ -3,9 +3,10 @@ const sqlite3 = require('sqlite3');
 const app = express();
 const PORT = 4000;
 const db = new sqlite3.Database(process.env.TEST_DATABASE || './database.sqlite');
-const cors = require('cors')
+const cors = require('cors');
+const bodyParser = require('body-parser');
 app.use(cors());
-
+app.use(bodyParser.json());
 
 //Routers
 const artistsrouter = require('./api/artists');

@@ -24,4 +24,19 @@ artistsrouter.get('/:id', (req, res) => {
   })
 });
 
+artistsrouter.post('/', (req, res, next) => {
+  if(req.body.artist.name || req.body.artist.dateOfBirth || req.body.artist.biography) {
+    db.run("INSERT INTO Artist (name, date_of_birth, biography, is_currently_employed) VALUES ($name, $dob, $biography, 1)", {$name: req.body.artist.name, $dob: req.body.artist.dateOfBirth, $biography: req.body.artist.biography}, function (err) {
+        if(!err) {
+          db.get("SELECT * FROM Artist WHERE id = $id", {$id: this.lastID}, (err, row) => {
+            if(!err) {
+              res.status(201).send({artist: row})
+            }
+          });
+        } else {
+            res.status(400).send();
+        }
+    });
+}});
+
 module.exports = artistsrouter;
