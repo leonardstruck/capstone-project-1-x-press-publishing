@@ -57,4 +57,21 @@ artistsrouter.put('/:id', (req, res) => {
   }
 });
 
+artistsrouter.delete('/:id', (req, res) => {
+  if(req.params.id) {
+    db.run("UPDATE ARTIST SET is_currently_employed = 0 WHERE id = $id", {$id: req.params.id}, function(err) {
+      if(!err) {
+        db.get("SELECT * FROM Artist WHERE id = $id", {$id: req.params.id}, (err, row) => {
+          if(!err) {
+            res.status(200).send({artist: row});
+          }
+        });
+      } else {
+        res.status(400).send();
+      }
+    });
+  } else {
+    res.status(400).send();
+  }
+})
 module.exports = artistsrouter;
