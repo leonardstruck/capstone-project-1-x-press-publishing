@@ -24,7 +24,7 @@ artistsrouter.get('/:id', (req, res) => {
   })
 });
 
-artistsrouter.post('/', (req, res, next) => {
+artistsrouter.post('/', (req, res) => {
   if(req.body.artist.name || req.body.artist.dateOfBirth || req.body.artist.biography) {
     db.run("INSERT INTO Artist (name, date_of_birth, biography, is_currently_employed) VALUES ($name, $dob, $biography, 1)", {$name: req.body.artist.name, $dob: req.body.artist.dateOfBirth, $biography: req.body.artist.biography}, function (err) {
         if(!err) {
@@ -38,5 +38,23 @@ artistsrouter.post('/', (req, res, next) => {
         }
     });
 }});
+
+artistsrouter.put('/:id', (req, res) => {
+  if(req.body.artist.name || req.body.artist.dateOfBirth || req.body.artist.biography) {
+    db.run("UPDATE Artist SET name = $name, date_of_birth = $dob, biography = $biography WHERE id = $id", {$name: req.body.artist.name, $dob: req.body.artist.dateOfBirth, $biography: req.body.artist.biography, $id: req.params.id}, function (err) {
+      if(!err) {
+        db.get("SELECT * FROM Artist WHERE id = $id", {$id: req.params.id}, (err, row) => {
+          if(!err) {
+            res.status(200).send({artist: row});
+          }
+        });
+      } else {
+        res.status(400).send();
+      }
+    });
+  } else {
+    res.status(400).send();
+  }
+});
 
 module.exports = artistsrouter;
