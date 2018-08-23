@@ -11,6 +11,9 @@ app.use(cors());
 const artistsrouter = require('./api/artists');
 app.use('/api/artists/', artistsrouter);
 
+const seriesrouter = require('./api/series');
+app.use('/api/series/', seriesrouter);
+
 
 app.listen(process.env.PORT || PORT, () => {console.log(`Listening on Port: ${PORT}`)});
 module.exports = app;
