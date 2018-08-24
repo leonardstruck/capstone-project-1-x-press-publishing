@@ -57,4 +57,23 @@ seriesrouter.put('/:id', (req, res) => {
   }
 });
 
+
+seriesrouter.delete('/:id', (req, res) => {
+  if(req.params.id) {
+    db.all("SELECT * FROM Issue WHERE series_id = $id", {$id: req.params.id}, (err, rows) => {
+      if(rows.length == 0) {
+        db.run("DELETE FROM Series WHERE id = $id", {$id: req.params.id}, (err) => {
+          if(!err) {
+            res.status(204).send();
+          }
+        });
+      } else {
+        res.status(400).send();
+      }
+    })
+  } else {
+    res.status(400).send();
+  }
+});
+
 module.exports = seriesrouter;
