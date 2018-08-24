@@ -24,4 +24,19 @@ seriesrouter.get('/:id', (req, res, next) => {
   });
 })
 
+seriesrouter.post('/', (req, res) => {
+  if(req.body.series.name || req.body.series.description) {
+    db.run("INSERT INTO Series (name, description) VALUES ($name, $description)", {$name: req.body.series.name, $description: req.body.series.description}, function (err) {
+        if(!err) {
+          db.get("SELECT * FROM Series WHERE id = $id", {$id: this.lastID}, (err, row) => {
+            if(!err) {
+              res.status(201).send({series: row})
+            }
+          });
+        } else {
+            res.status(400).send();
+        }
+    });
+}});
+
 module.exports = seriesrouter;
