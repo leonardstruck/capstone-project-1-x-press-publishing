@@ -87,6 +87,31 @@ seriesrouter.put('/:id', (req, res) => {
   }
 });
 
+seriesrouter.put('/:id/issues/:issueId', (req, res, next) => {
+  db.all("SELECT * FROM Issue WHERE id = $id", {$id: req.params.issueId}, (err, row) => {
+    if(row.length == 0) {
+      res.status(404).send();
+    } else {
+      if(req.body.issue.name || req.body.issue.issueNumber || req.body.issue.publicationDate || req.body.issue.artistId) {
+        db.run("UPDATE Issue SET name = $name, issue_number = $issuenumber, publication_date = $publicationdate, artist_id = $artistid, series_id = $seriesid WHERE id = $id", {$name: req.body.issue.name, $issuenumber: req.body.issue.issueNumber, $publicationdate: req.body.issue.publicationDate, $artistid: req.body.issue.artistId, $seriesid: req.params.id, $id: req.params.issueId}, function(err) {
+          if(!err) {
+            db.get("SELECT * FROM Issue WHERE id = $id", {$id: req.params.issueId}, (err, row) => {
+              if (!err) {
+                res.status(200).send({issue: row});
+              }
+            });
+          } else {
+           res.status(400).send();
+          }
+        });
+      } else {
+        res.status(400).send();
+      }
+    }
+  })
+
+});
+
 //DELETE REQUESTS
 seriesrouter.delete('/:id', (req, res) => {
   if(req.params.id) {
