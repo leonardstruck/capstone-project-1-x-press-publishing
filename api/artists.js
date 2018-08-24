@@ -4,6 +4,7 @@ const db = new sqlite3.Database(process.env.TEST_DATABASE || './database.sqlite'
 
 var artistsrouter = express.Router();
 
+//GET REQUESTS
 artistsrouter.get('/', (req, res) => {
   db.all("SELECT * FROM Artist WHERE is_currently_employed = 1", (err, rows) => {
     if(err) {
@@ -24,6 +25,7 @@ artistsrouter.get('/:id', (req, res) => {
   })
 });
 
+//POST REQUESTS
 artistsrouter.post('/', (req, res) => {
   if(req.body.artist.name || req.body.artist.dateOfBirth || req.body.artist.biography) {
     db.run("INSERT INTO Artist (name, date_of_birth, biography, is_currently_employed) VALUES ($name, $dob, $biography, 1)", {$name: req.body.artist.name, $dob: req.body.artist.dateOfBirth, $biography: req.body.artist.biography}, function (err) {
@@ -39,6 +41,7 @@ artistsrouter.post('/', (req, res) => {
     });
 }});
 
+//PUT REQUESTS
 artistsrouter.put('/:id', (req, res) => {
   if(req.body.artist.name || req.body.artist.dateOfBirth || req.body.artist.biography) {
     db.run("UPDATE Artist SET name = $name, date_of_birth = $dob, biography = $biography WHERE id = $id", {$name: req.body.artist.name, $dob: req.body.artist.dateOfBirth, $biography: req.body.artist.biography, $id: req.params.id}, function (err) {
@@ -57,6 +60,7 @@ artistsrouter.put('/:id', (req, res) => {
   }
 });
 
+//DELETE REQUESTS
 artistsrouter.delete('/:id', (req, res) => {
   if(req.params.id) {
     db.run("UPDATE ARTIST SET is_currently_employed = 0 WHERE id = $id", {$id: req.params.id}, function(err) {
@@ -73,5 +77,6 @@ artistsrouter.delete('/:id', (req, res) => {
   } else {
     res.status(400).send();
   }
-})
+});
+
 module.exports = artistsrouter;

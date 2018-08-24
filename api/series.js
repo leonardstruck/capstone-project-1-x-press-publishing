@@ -3,7 +3,7 @@ const sqlite3 = require('sqlite3');
 const db = new sqlite3.Database(process.env.TEST_DATABASE || './database.sqlite');
 
 var seriesrouter = express.Router();
-
+//GET REQUESTS
 seriesrouter.get('/', (req, res, next) => {
   db.all("SELECT * FROM Series", (err, rows) => {
     if(err) {
@@ -34,6 +34,7 @@ seriesrouter.get('/:id/issues', (req, res) => {
   })
 });
 
+//POST REQUESTS
 seriesrouter.post('/', (req, res) => {
   if(req.body.series.name || req.body.series.description) {
     db.run("INSERT INTO Series (name, description) VALUES ($name, $description)", {$name: req.body.series.name, $description: req.body.series.description}, function (err) {
@@ -49,6 +50,7 @@ seriesrouter.post('/', (req, res) => {
     });
 }});
 
+//PUT REQUESTS
 seriesrouter.put('/:id', (req, res) => {
   if(req.body.series.name || req.body.series.description) {
     db.run("UPDATE Series SET name = $name, description = $description WHERE id = $id", {$name: req.body.series.name, $description: req.body.series.description, $id: req.params.id}, function (err) {
@@ -67,7 +69,7 @@ seriesrouter.put('/:id', (req, res) => {
   }
 });
 
-
+//DELETE REQUESTS
 seriesrouter.delete('/:id', (req, res) => {
   if(req.params.id) {
     db.all("SELECT * FROM Issue WHERE series_id = $id", {$id: req.params.id}, (err, rows) => {
