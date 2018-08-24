@@ -50,6 +50,24 @@ seriesrouter.post('/', (req, res) => {
     });
 }});
 
+seriesrouter.post('/:id/issues', (req, res) => {
+  if(req.body.issue.name || req.body.issue.issueNumber || req.body.issue.publicationDate || req.body.issue.artistId) {
+    db.run("INSERT INTO Issue (name, issue_number, publication_date, artist_id, series_id) VALUES ($name, $issuenumber, $publicationdate, $artistid, $seriesid)", {$name: req.body.issue.name, $issuenumber: req.body.issue.issueNumber, $publicationdate: req.body.issue.publicationDate, $artistid: req.body.issue.artistId, $seriesid: req.params.id}, function(err) {
+      if(!err) {
+        db.get("SELECT * FROM Issue WHERE id = $id", {$id: this.lastID}, (err, row) => {
+          if(!err) {
+            res.status(201).send({issue: row});
+          }
+        });
+      } else {
+        res.status(400).send();
+      }
+    });
+  } else {
+    res.status(400).send();
+  }
+});
+
 //PUT REQUESTS
 seriesrouter.put('/:id', (req, res) => {
   if(req.body.series.name || req.body.series.description) {
