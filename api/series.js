@@ -22,7 +22,17 @@ seriesrouter.get('/:id', (req, res, next) => {
       res.status(200).send({series: row});
     }
   });
-})
+});
+
+seriesrouter.get('/:id/issues', (req, res) => {
+  db.all("SELECT * FROM Issue WHERE series_id = $id", {$id: req.params.id}, (err, rows) => {
+    if(err || rows.length == 0) {
+      res.status(404).send({issues: []});
+    } else {
+      res.status(200).send({issues: rows});
+    }
+  })
+});
 
 seriesrouter.post('/', (req, res) => {
   if(req.body.series.name || req.body.series.description) {
