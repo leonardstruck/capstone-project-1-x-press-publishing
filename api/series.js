@@ -131,4 +131,24 @@ seriesrouter.delete('/:id', (req, res) => {
   }
 });
 
+seriesrouter.delete('/:id/issues/:issueId', (req, res) => {
+  if(req.params.id || req.params.issueId) {
+    db.all("SELECT * FROM Issue WHERE id = $id", {$id: req.params.issueId}, (err, rows) => {
+      if(!rows.length == 0) {
+        db.run("DELETE FROM Issue WHERE id = $id", {$id: req.params.issueId}, (err) => {
+          if (!err) {
+            res.status(204).send();
+          } else {
+            console.log(err);
+          }
+        });
+      } else {
+        res.status(404).send();
+      }
+    });
+  } else {
+    res.status(404).send();
+  }
+})
+
 module.exports = seriesrouter;
